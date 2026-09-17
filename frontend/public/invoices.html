@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InvoShield — Invoices</title>
+  <link rel="stylesheet" href="/css/invoices.css" />
+  <style>
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+      background-color: var(--bg-panel);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 520px;
+      max-width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .modal-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+      border-radius: 16px 16px 0 0;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(59, 130, 246, 0.05));
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: var(--text);
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-header h2::before {
+      content: '📋';
+      font-size: 1.2rem;
+      margin-right: 8px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-2);
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .close-btn:hover {
+      background-color: var(--bg-hover);
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background-color: var(--bg-input);
+      color: var(--text);
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .form-group input:hover {
+      border-color: rgba(76, 175, 80, 0.3);
+    }
+
+    .form-group input::placeholder {
+      color: var(--text-3);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: flex-end;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .form-actions .btn {
+      padding: 12px 24px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      min-width: 100px;
+    }
+
+    .form-actions .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="shell">
+
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
+        </div>
+        <div>
+          <div class="logo-name">Invo<span>Shield</span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">Main</div>
+
+      <a class="nav-item" href="dashboard.html">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+        </svg>
+        <span>Overview</span>
+      </a>
+      <a class="nav-item active" href="invoices.html">
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+        </svg>
+        <span>Invoices</span>
+        <span class="badge-count">0</span>
+      </a>
+      <a class="nav-item" href="fraud-alert.html">
+        <svg viewBox="0 0 24 24">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <span>Fraud Alerts</span>
+        <span class="badge-count">0</span>
+      </a>
+      <a class="nav-item" href="gstin-lookup.html">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <span>GSTIN Lookup</span>
+      </a>
+      <a class="nav-item" href="analytics.html">
+        <svg viewBox="0 0 24 24">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>
+        <span>Analytics</span>
+      </a>
+
+      <div class="sidebar-section">Enforcement</div>
+
+      <a class="nav-item" href="entities.html">
+        <svg viewBox="0 0 24 24">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        <span>Entities</span>
+      </a>
+      <a class="nav-item" href="case-manager.html">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+        <span>Case Manager</span>
+        <span class="badge-count ok">0</span>
+      </a>
+      <a class="nav-item" href="blacklist.html">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        <span>Blacklist</span>
+      </a>
+
+      <div class="sidebar-divider"></div>
+
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="8" y1="13" x2="16" y2="13" />
+          <line x1="8" y1="17" x2="16" y2="17" />
+        </svg>
+        <span>Reports</span>
+      </a>
+      <a class="nav-item" href="settings.html">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+        </svg>
+        <span>Settings</span>
+      </a>
+    <a class="nav-item" href="about.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <span>About Us</span>
+    </a>
+
+      <div class="user-tile">
+        <div class="user-avatar">SK</div>
+        <div>
+          <div class="user-name">Sumit Kumar</div>
+          <div class="user-role">Senior Officer</div>
+        </div>
+        <svg viewBox="0 0 24 24">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </div>
+    </nav>
+
+    <header class="topbar">
+      <div class="breadcrumb">
+        <a href="dashboard.html">Dashboard</a>
+        <span class="sep">/</span>
+        <strong>Invoices</strong>
+      </div>
+      <div class="topbar-spacer"></div>
+      <button class="tbtn primary" onclick="logout()">
+        <svg viewBox="0 0 24 24">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        Logout
+      </button>
+    </header>
+
+    <main class="main">
+      <div class="subheader">
+        <div class="sh-left">
+          <span class="sh-title">GST Invoices Database</span>
+          <span class="sh-count">3,247 invoices</span>
+        </div>
+        <div class="top-actions">
+          <button class="btn primary" onclick="window.InvoShield.openAddInvoiceModal()"
+            style="background: #3b82f6; color: white; border: none; box-shadow: 0 4px 12px rgba(59,130,246,0.3); transition: all 0.3s ease;">Add
+            Invoice</button>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">GSTIN</span>
+            <input type="text" id="gstinFilter" class="filter-input" placeholder="Search GSTIN..."
+              oninput="window.InvoShield.applyInvoiceFilters()" />
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Status</span>
+            <select id="statusFilter" class="filter-select" onchange="window.InvoShield.applyInvoiceFilters()">
+              <option value="">All Status</option>
+              <option value="pending">Pending Review</option>
+              <option value="flagged">Flagged</option>
+              <option value="cleared">Cleared</option>
+              <option value="approved">Approved</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Amount Range</span>
+            <input type="text" id="amountFilter" class="filter-input" placeholder="Min - Max"
+              oninput="window.InvoShield.applyInvoiceFilters()" />
+          </div>
+          <div class="spacer"></div>
+          <div class="bulk-actions">
+            <button class="action-btn"
+              style="background: #10b981; color: white; border: none; box-shadow: 0 4px 12px rgba(16,185,129,0.2); transition: all 0.3s ease;">Bulk
+              Verify</button>
+            <button class="action-btn danger"
+              style="background: #ef4444; color: white; border: none; box-shadow: 0 4px 12px rgba(239,68,68,0.2); transition: all 0.3s ease;">Bulk
+              Reject</button>
+          </div>
+        </div>
+
+        <div class="tbl-wrapper">
+          <div class="tbl-head">
+            <span class="tbl-title">Recent Invoices</span>
+            <div class="tbl-actions">
+              <button class="tbl-btn">Sort by Date ↓</button>
+              <button class="tbl-btn">Columns</button>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" /></th>
+                  <th>Invoice ID</th>
+                  <th>GSTIN</th>
+                  <th>Supplier</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Risk Score</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="invoiceBody">
+                <!-- Dynamic content will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span class="pag-info" id="tableInfo"></span>
+            <div class="pag-controls" id="paginationControls">
+              <!-- Dynamic pagination will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    
+  
+    
+  <!-- Add Invoice Modal -->
+  <div id="addInvoiceModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Invoice</h2>
+        <button class="close-btn" onclick="window.InvoShield.closeAddInvoiceModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="addInvoiceForm" onsubmit="window.InvoShield.handleInvoiceSubmit(event)">
+          <div class="form-group">
+            <label for="gstin">GSTIN Number</label>
+            <input type="text" id="gstin" name="gstin" placeholder="Enter GSTIN (e.g., 27AABC1234D1Z5)" required>
+          </div>
+          <div class="form-group">
+            <label for="invoiceId">Invoice ID</label>
+            <input type="text" id="invoiceId" name="invoiceId" placeholder="Enter Invoice ID" required>
+          </div>
+          <div class="form-group">
+            <label for="supplierName">Supplier Name</label>
+            <input type="text" id="supplierName" name="supplierName" placeholder="Enter Supplier Name" required>
+          </div>
+          <div class="form-group">
+            <label for="amount">Amount (₹)</label>
+            <input type="number" id="amount" name="amount" placeholder="Enter Amount" required>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn primary" onclick="window.InvoShield.closeAddInvoiceModal()">Cancel</button>
+            <button type="submit" class="btn primary">Add Invoice</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+    </main>
+  </div>
+
+  
+
+  <script src="/js/router.js"></script>
+  <script src="/js/invoices.js"></script>
+  <script>
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/public/login.html';
+    }
+  </script>
+</body>
+</html>

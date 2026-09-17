@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
+    },
+    {
+      "source": "/css/:path*",
+      "destination": "/frontend/css/:path*"
+    },
+    {
+      "source": "/js/:path*",
+      "destination": "/frontend/js/:path*"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/frontend/assets/:path*"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/public/login.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/frontend/public/login.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/frontend/public/dashboard.html"
+    },
+    {
+      "source": "/invoices",
+      "destination": "/frontend/public/invoices.html"
+    },
+    {
+      "source": "/fraud-alert",
+      "destination": "/frontend/public/fraud-alert.html"
+    },
+    {
+      "source": "/gstin-lookup",
+      "destination": "/frontend/public/gstin-lookup.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/frontend/public/about.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/frontend/public/:path*"
+    }
+  ]
+}
